@@ -7,13 +7,13 @@ use FOS\RestBundle\Request\ParamFetcher;
 class ListParamsModel
 {
     private int $pageNumber;
-
     private int $pageSize;
-
     private string $sortBy;
-
     private string $sortDirection;
 
+    /**
+     * @param ParamFetcher $paramFetcher
+     */
     public function __construct(ParamFetcher $paramFetcher)
     {
         $this->pageNumber = intval($paramFetcher->get('pageNumber'));

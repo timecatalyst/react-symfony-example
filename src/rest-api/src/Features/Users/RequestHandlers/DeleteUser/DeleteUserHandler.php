@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Features\Users\RequestHandlers;
+namespace App\Features\Users\RequestHandlers\DeleteUser;
 
+use App\Features\Shared\Interfaces\RequestHandlerInterface;
 use App\Repository\UserRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 
-class DeleteUserHandler
+class DeleteUserHandler implements RequestHandlerInterface
 {
     private UserRepository $userRepository;
 
@@ -17,7 +18,7 @@ class DeleteUserHandler
     }
 
     /**
-     * @param int $id
+     * @param DeleteUserRequest $request
      *
      * @return int|null
      *
@@ -25,12 +26,14 @@ class DeleteUserHandler
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function handle(int $id): ?int
+    public function handle(DeleteUserRequest $request): ?int
     {
-        $user = $this->userRepository->getUser($id);
+        $userId = $request->getUserId();
+
+        $user = $this->userRepository->getUser($userId);
         if (!$user) return null;
 
         $this->userRepository->deleteUser($user);
-        return $id;
+        return $userId;
     }
 }

@@ -5,7 +5,6 @@ namespace App\Features\Users\DTO;
 class UsersListResponseModel
 {
     private int $totalItems;
-
     private array $results;
 
     public function __construct(int $totalItems, array $results)

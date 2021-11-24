@@ -92,14 +92,4 @@ class CreateUpdateUserModel
     {
         $this->active = $active;
     }
-
-    /**
-     * @Assert\IsTrue(message = "Email address already in use.")
-     *
-     * @return bool
-     */
-    public function isEmailUnique(): bool
-    {
-        return $this->email !== 'foo@example.com';
-    }
 }

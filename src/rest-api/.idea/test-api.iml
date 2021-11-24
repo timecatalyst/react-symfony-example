@@ -139,6 +139,10 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/mark-gerarts/automapper-plus-bundle" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/mark-gerarts/auto-mapper-plus" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/nelmio/cors-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/tactician-logger" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/tactician-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/tactician" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/tactician-container" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

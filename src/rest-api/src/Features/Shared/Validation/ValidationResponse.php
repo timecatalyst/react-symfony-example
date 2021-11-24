@@ -8,15 +8,9 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 class ValidationResponse
 {
     private int $code = Response::HTTP_UNPROCESSABLE_ENTITY;
-
     private string $message = 'The request contained one or more validation errors.';
-
     private array $errors = [];
 
-    /**
-     * ValidationResponse constructor.
-     * @param ConstraintViolationListInterface $validationErrors
-     */
     public function __construct(ConstraintViolationListInterface $validationErrors)
     {
         foreach ($validationErrors as $error)

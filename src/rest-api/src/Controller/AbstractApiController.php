@@ -7,7 +7,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-abstract class ApiController extends AbstractFOSRestController
+abstract class AbstractApiController extends AbstractFOSRestController
 {
     /**
      * @param mixed $payload
@@ -39,6 +39,9 @@ abstract class ApiController extends AbstractFOSRestController
         return $this->buildResponse($validationResponse, Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
+    /**
+     * @return Response
+     */
     protected function notFoundResponse(): Response
     {
         return $this->buildResponse(null, Response::HTTP_NOT_FOUND);

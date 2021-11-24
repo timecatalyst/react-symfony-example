@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Features\Users\RequestHandlers;
+namespace App\Features\Users\RequestHandlers\CreateUser;
 
+use App\Entity\User;
+use App\Features\Shared\Interfaces\RequestHandlerInterface;
 use App\Features\Users\DTO\UserDetailsModel;
 use App\Repository\UserRepository;
 use AutoMapperPlus\AutoMapperInterface;
 use AutoMapperPlus\Exception\UnregisteredMappingException;
-use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\ORMException;
 
-class GetUserHandler
+class CreateUserHandler implements RequestHandlerInterface
 {
-
     private AutoMapperInterface $mapper;
     private UserRepository $userRepository;
 
@@ -23,18 +24,17 @@ class GetUserHandler
     }
 
     /**
-     * @param int $id
+     * @param CreateUserRequest $request
      *
-     * @return UserDetailsModel|null
+     * @return UserDetailsModel
      *
      * @throws UnregisteredMappingException
-     * @throws NonUniqueResultException
+     * @throws ORMException
      */
-    public function handle(int $id): ?UserDetailsModel
+    public function handle(CreateUserRequest $request): UserDetailsModel
     {
-        $user = $this->userRepository->getUser($id);
-        if (!$user) return null;
-
+        $user = $this->mapper->map($request->getModel(), User::class);
+        $this->userRepository->createUser($user);
         return $this->mapper->map($user, UserDetailsModel::class);
     }
 }

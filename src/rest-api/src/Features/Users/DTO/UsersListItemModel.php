@@ -5,14 +5,9 @@ namespace App\Features\Users\DTO;
 class UsersListItemModel
 {
     private int $id;
-
     private string $name;
-
     private string $email;
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Features\Users\RequestHandlers;
+namespace App\Features\Users\RequestHandlers\GetUsersList;
 
-use App\Faetures\Shared\DTO\ListParamsModel;
+use App\Features\Shared\Interfaces\RequestHandlerInterface;
 use App\Features\Users\DTO\UsersListItemModel;
 use App\Features\Users\DTO\UsersListResponseModel;
 use App\Repository\UserRepository;
 use AutoMapperPlus\AutoMapperInterface;
 
-class GetUsersListHandler
+class GetUsersListHandler implements RequestHandlerInterface
 {
     private AutoMapperInterface $mapper;
     private UserRepository $userRepository;
@@ -22,17 +22,19 @@ class GetUsersListHandler
     }
 
     /**
-     * @param ListParamsModel $listParamsModel
+     * @param GetUsersListRequest $request
      *
      * @return UsersListResponseModel
      */
-    public function handle(ListParamsModel $listParamsModel): UsersListResponseModel
+    public function handle(GetUsersListRequest $request): UsersListResponseModel
     {
+        $model = $request->getModel();
+
         $users = $this->userRepository->getUsersList(
-            $listParamsModel->getPageNumber(),
-            $listParamsModel->getPageSize(),
-            $listParamsModel->getSortBy(),
-            $listParamsModel->getSortDirection()
+            $model->getPageNumber(),
+            $model->getPageSize(),
+            $model->getSortBy(),
+            $model->getSortDirection()
         );
 
         $totalItems = $this->userRepository->count([]);

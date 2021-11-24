@@ -5,13 +5,9 @@ namespace App\Features\Users\DTO;
 class UserDetailsModel
 {
     private int $id;
-
     private string $name;
-
     private string $email;
-
     private string $gender;
-
     private bool $active;
 
     /**
