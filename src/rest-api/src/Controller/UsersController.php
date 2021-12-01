@@ -4,11 +4,15 @@ namespace App\Controller;
 
 use App\Faetures\Shared\DTO\ListParamsModel;
 use App\Features\Users\DTO\CreateUpdateUserModel;
+use App\Features\Users\DTO\UserDetailsModel;
+use App\Features\Users\DTO\UsersListResponseModel;
 use App\Features\Users\RequestHandlers\CreateUser\CreateUserRequest;
 use App\Features\Users\RequestHandlers\DeleteUser\DeleteUserRequest;
 use App\Features\Users\RequestHandlers\GetUser\GetUserRequest;
 use App\Features\Users\RequestHandlers\GetUsersList\GetUsersListRequest;
 use App\Features\Users\RequestHandlers\UpdateUser\UpdateUserRequest;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\Annotations\Delete;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\Annotations\Post;
@@ -17,10 +21,9 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Request\ParamFetcher;
 use League\Tactician\CommandBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class UsersControllerAbstract extends AbstractApiController
+class UsersController extends AbstractFOSRestController
 {
     private CommandBus $commandBus;
 
@@ -31,6 +34,7 @@ class UsersControllerAbstract extends AbstractApiController
 
     /**
      * @Get("v1.0/users")
+     * @View()
      *
      * @QueryParam(name="pageNumber", requirements="\d+", default="1")
      * @QueryParam(name="pageSize", requirements="\d+", default="10")
@@ -39,80 +43,72 @@ class UsersControllerAbstract extends AbstractApiController
      *
      * @param ParamFetcher $paramFetcher
      *
-     * @return Response
+     * @return UsersListResponseModel
      */
-    public function getUsersList(ParamFetcher $paramFetcher): Response
+    public function getUsersList(ParamFetcher $paramFetcher): UsersListResponseModel
     {
         $model = new ListParamsModel($paramFetcher);
-        $users = $this->commandBus->handle(new GetUsersListRequest($model));
-        return $this->okResponse($users);
+        return $this->commandBus->handle(new GetUsersListRequest($model));
     }
 
     /**
      * @Get("v1.0/users/{userId}")
+     * @View()
      *
      * @param int $userId
      *
-     * @return Response
+     * @return UserDetailsModel
      */
-    public function getUserDetails(int $userId): Response
+    public function getUserDetails(int $userId): UserDetailsModel
     {
         $user = $this->commandBus->handle(new GetUserRequest($userId));
-        return $user ? $this->okResponse($user) : $this->notFoundResponse();
+        if (!$user) throw new NotFoundHttpException('User not found');
+        return $user;
     }
 
     /**
      * @Post("v1.0/users")
      * @ParamConverter("model", converter="fos_rest.request_body")
+     * @View(statusCode=201)
      *
      * @param CreateUpdateUserModel $model
-     * @param ConstraintViolationListInterface $validationErrors
      *
-     * @return Response
+     * @return UserDetailsModel
      */
-    public function createUser(
-        CreateUpdateUserModel $model,
-        ConstraintViolationListInterface $validationErrors): Response
+    public function createUser(CreateUpdateUserModel $model): UserDetailsModel
     {
-        if (count($validationErrors) > 0)
-            return $this->unprocessableEntityResponse($validationErrors);
-
-        $user = $this->commandBus->handle(new CreateUserRequest($model));
-        return $this->createdResponse($user);
+        return $this->commandBus->handle(new CreateUserRequest($model));
     }
 
     /**
      * @Put("v1.0/users/{userId}")
      * @ParamConverter("model", converter="fos_rest.request_body")
+     * @View()
      *
      * @param int $userId
      * @param CreateUpdateUserModel $model
-     * @param ConstraintViolationListInterface $validationErrors
      *
-     * @return Response
+     * @return UserDetailsModel
      */
-    public function updateUser(
-        int $userId,
-        CreateUpdateUserModel $model,
-        ConstraintViolationListInterface $validationErrors): Response
+    public function updateUser(int $userId, CreateUpdateUserModel $model): UserDetailsModel
     {
-        if (count($validationErrors) > 0)
-            return $this->unprocessableEntityResponse($validationErrors);
-
         $user = $this->commandBus->handle(new UpdateUserRequest($userId, $model));
-        return $user ? $this->okResponse($user) : $this->notFoundResponse();
+        if (!$user) throw new NotFoundHttpException('User not found');
+        return $user;
     }
 
     /**
      * @Delete("v1.0/users/{userId}")
+     * @View()
      *
      * @param int $userId
      *
-     * @return Response
+     * @return int
      */
-    public function deleteUser(int $userId): Response
+    public function deleteUser(int $userId): int
     {
         $id = $this->commandBus->handle(new DeleteUserRequest($userId));
-        return $id ? $this->okResponse($userId) : $this->notFoundResponse();
+        if (!$id) throw new NotFoundHttpException('User not found');
+        return $id;
     }
 }
