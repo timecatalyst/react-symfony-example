@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Faetures\Shared\DTO;
-
-use FOS\RestBundle\Request\ParamFetcher;
+namespace App\Features\Shared\DTO;
 
 class ListParamsModel
 {
@@ -10,17 +8,6 @@ class ListParamsModel
     private int $pageSize;
     private string $sortBy;
     private string $sortDirection;
-
-    /**
-     * @param ParamFetcher $paramFetcher
-     */
-    public function __construct(ParamFetcher $paramFetcher)
-    {
-        $this->pageNumber = intval($paramFetcher->get('pageNumber'));
-        $this->pageSize = intval($paramFetcher->get('pageSize'));
-        $this->sortBy = $paramFetcher->get('sortBy');
-        $this->sortDirection = $paramFetcher->get('sortDirection');
-    }
 
     /**
      * @return int
@@ -52,5 +39,45 @@ class ListParamsModel
     public function getSortDirection(): string
     {
         return $this->sortDirection;
+    }
+
+    /**
+     * @param int $pageNumber
+     * @return ListParamsModel
+     */
+    public function setPageNumber(int $pageNumber): ListParamsModel
+    {
+        $this->pageNumber = $pageNumber;
+        return $this;
+    }
+
+    /**
+     * @param int $pageSize
+     * @return ListParamsModel
+     */
+    public function setPageSize(int $pageSize): ListParamsModel
+    {
+        $this->pageSize = $pageSize;
+        return $this;
+    }
+
+    /**
+     * @param mixed|string $sortBy
+     * @return ListParamsModel
+     */
+    public function setSortBy(string $sortBy): ListParamsModel
+    {
+        $this->sortBy = $sortBy;
+        return $this;
+    }
+
+    /**
+     * @param mixed|string $sortDirection
+     * @return ListParamsModel
+     */
+    public function setSortDirection(string $sortDirection): ListParamsModel
+    {
+        $this->sortDirection = $sortDirection;
+        return $this;
     }
 }

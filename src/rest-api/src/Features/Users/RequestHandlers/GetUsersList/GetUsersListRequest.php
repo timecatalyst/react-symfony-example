@@ -2,7 +2,7 @@
 
 namespace App\Features\Users\RequestHandlers\GetUsersList;
 
-use App\Faetures\Shared\DTO\ListParamsModel;
+use App\Features\Shared\DTO\ListParamsModel;
 
 class GetUsersListRequest
 {

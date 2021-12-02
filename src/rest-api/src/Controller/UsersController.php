@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Faetures\Shared\DTO\ListParamsModel;
+use App\Features\Shared\DTO\ListParamsModel;
 use App\Features\Users\DTO\CreateUpdateUserModel;
 use App\Features\Users\DTO\UserDetailsModel;
 use App\Features\Users\DTO\UsersListResponseModel;
@@ -17,8 +17,6 @@ use FOS\RestBundle\Controller\Annotations\Delete;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\Annotations\Post;
 use FOS\RestBundle\Controller\Annotations\Put;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
-use FOS\RestBundle\Request\ParamFetcher;
 use League\Tactician\CommandBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -34,21 +32,16 @@ class UsersController extends AbstractFOSRestController
 
     /**
      * @Get("v1.0/users")
+     * @ParamConverter(name="listParams")
      * @View()
      *
-     * @QueryParam(name="pageNumber", requirements="\d+", default="1")
-     * @QueryParam(name="pageSize", requirements="\d+", default="10")
-     * @QueryParam(name="sortBy", requirements="(name|email)", default="name")
-     * @QueryParam(name="sortDirection", requirements="(asc|desc)", default="asc")
-     *
-     * @param ParamFetcher $paramFetcher
+     * @param ListParamsModel $listParams
      *
      * @return UsersListResponseModel
      */
-    public function getUsersList(ParamFetcher $paramFetcher): UsersListResponseModel
+    public function getUsersList(ListParamsModel $listParams): UsersListResponseModel
     {
-        $model = new ListParamsModel($paramFetcher);
-        return $this->commandBus->handle(new GetUsersListRequest($model));
+        return $this->commandBus->handle(new GetUsersListRequest($listParams));
     }
 
     /**
