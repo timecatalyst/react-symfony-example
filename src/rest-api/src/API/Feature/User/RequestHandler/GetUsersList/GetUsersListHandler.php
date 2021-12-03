@@ -30,7 +30,7 @@ class GetUsersListHandler implements RequestHandlerInterface
     {
         $model = $request->getModel();
 
-        $users = $this->userRepository->getUsersList(
+        $users = $this->userRepository->getPaginatedUsersList(
             $model->getPageNumber(),
             $model->getPageSize(),
             $model->getSortBy(),

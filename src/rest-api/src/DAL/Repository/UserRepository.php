@@ -5,9 +5,6 @@ namespace App\DAL\Repository;
 use App\DAL\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 use UnexpectedValueException;
 
@@ -37,7 +34,7 @@ class UserRepository extends ServiceEntityRepository
      *
      * @return User[]
      */
-    public function getUsersList(
+    public function getPaginatedUsersList(
         int $pageNumber = 1,
         int $pageSize = 10,
         string $sortBy = 'name',
@@ -56,56 +53,5 @@ class UserRepository extends ServiceEntityRepository
             ->setMaxResults($pageSize)
             ->getQuery()
             ->getResult();
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return User|null
-     *
-     * @throws NonUniqueResultException
-     */
-    public function getUser(int $id): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->where('u.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
-    /**
-     * @param User $user
-     *
-     * @return User
-     *
-     * @throws ORMException
-     */
-    public function createUser(User $user): User
-    {
-        $this->getEntityManager()->persist($user);
-        $this->saveToDatabase();
-        return $user;
-    }
-
-    /**
-     * @param User $user
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function deleteUser(User $user): void
-    {
-        $this->getEntityManager()->remove($user);
-        $this->saveToDatabase();
-    }
-
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function saveToDatabase(): void
-    {
-        $this->getEntityManager()->flush();
     }
 }

@@ -7,29 +7,21 @@ use App\API\Feature\User\DTO\UserDetailsModel;
 use App\DAL\Repository\UserRepository;
 use AutoMapperPlus\AutoMapperInterface;
 use AutoMapperPlus\Exception\UnregisteredMappingException;
-use Doctrine\ORM\ORMException;
+use Doctrine\Persistence\ManagerRegistry;
 
 class UpdateUserHandler implements RequestHandlerInterface
 {
-    /**
-     * @var AutoMapperInterface
-     */
     private AutoMapperInterface $mapper;
-
-    /**
-     * @var UserRepository
-     */
+    private ManagerRegistry $registry;
     private UserRepository $userRepository;
 
-    /**
-     * @param AutoMapperInterface $mapper
-     * @param UserRepository $userRepository
-     */
     public function __construct(
         AutoMapperInterface $mapper,
+        ManagerRegistry $registry,
         UserRepository $userRepository)
     {
         $this->mapper = $mapper;
+        $this->registry = $registry;
         $this->userRepository = $userRepository;
     }
 
@@ -39,15 +31,14 @@ class UpdateUserHandler implements RequestHandlerInterface
      * @return UserDetailsModel|null
      *
      * @throws UnregisteredMappingException
-     * @throws ORMException
      */
     public function handle(UpdateUserRequest $request): ?UserDetailsModel
     {
-        $user = $this->userRepository->getUser($request->getUserId());
+        $user = $this->userRepository->find($request->getUserId());
         if (!$user) return null;
 
         $this->mapper->mapToObject($request->getModel(), $user);
-        $this->userRepository->saveToDatabase();
+        $this->registry->getManager()->flush();
 
         return $this->mapper->map($user, UserDetailsModel::class);
     }

@@ -7,7 +7,6 @@ use App\API\Feature\User\DTO\UserDetailsModel;
 use App\DAL\Repository\UserRepository;
 use AutoMapperPlus\AutoMapperInterface;
 use AutoMapperPlus\Exception\UnregisteredMappingException;
-use Doctrine\ORM\NonUniqueResultException;
 
 class GetUserHandler implements RequestHandlerInterface
 {
@@ -28,11 +27,10 @@ class GetUserHandler implements RequestHandlerInterface
      * @return UserDetailsModel|null
      *
      * @throws UnregisteredMappingException
-     * @throws NonUniqueResultException
      */
     public function handle(GetUserRequest $request): ?UserDetailsModel
     {
-        $user = $this->userRepository->getUser($request->getUserId());
+        $user = $this->userRepository->find($request->getUserId());
         if (!$user) return null;
 
         return $this->mapper->map($user, UserDetailsModel::class);

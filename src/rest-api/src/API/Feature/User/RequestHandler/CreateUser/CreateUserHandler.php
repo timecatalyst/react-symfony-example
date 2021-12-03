@@ -4,23 +4,22 @@ namespace App\API\Feature\User\RequestHandler\CreateUser;
 
 use App\API\Feature\Shared\Interface\RequestHandlerInterface;
 use App\API\Feature\User\DTO\UserDetailsModel;
-use App\DAL\Repository\UserRepository;
 use App\DAL\Entity\User;
 use AutoMapperPlus\AutoMapperInterface;
 use AutoMapperPlus\Exception\UnregisteredMappingException;
-use Doctrine\ORM\ORMException;
+use Doctrine\Persistence\ManagerRegistry;
 
 class CreateUserHandler implements RequestHandlerInterface
 {
     private AutoMapperInterface $mapper;
-    private UserRepository $userRepository;
+    private ManagerRegistry $registry;
 
     public function __construct(
         AutoMapperInterface $mapper,
-        UserRepository $userRepository)
+        ManagerRegistry $registry)
     {
         $this->mapper = $mapper;
-        $this->userRepository = $userRepository;
+        $this->registry = $registry;
     }
 
     /**
@@ -29,12 +28,15 @@ class CreateUserHandler implements RequestHandlerInterface
      * @return UserDetailsModel
      *
      * @throws UnregisteredMappingException
-     * @throws ORMException
      */
     public function handle(CreateUserRequest $request): UserDetailsModel
     {
+        $entityManager = $this->registry->getManager();
+
         $user = $this->mapper->map($request->getModel(), User::class);
-        $this->userRepository->createUser($user);
+        $entityManager->persist($user);
+        $entityManager->flush();
+
         return $this->mapper->map($user, UserDetailsModel::class);
     }
 }
