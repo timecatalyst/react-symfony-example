@@ -19,7 +19,7 @@ export const getUserDetails = (id: number | string) => async (dispatch: Dispatch
   dispatch(pending());
 
   try {
-    const response = await get<UserDetails>(`users/${id}`);
+    const response = await get<UserDetails>(`user/${id}`);
     dispatch(succeeded(response.data));
   } catch (e) {
     dispatch(failed());

@@ -9,7 +9,7 @@ export default (onSuccess?: () => void) => {
   const {enqueueSnackbar} = useSnackbar();
   const queryClient = useQueryClient();
 
-  return useMutation((id: number) => del(`users/${id}`), {
+  return useMutation((id: number) => del(`user/${id}`), {
     onSuccess: () => {
       queryClient.invalidateQueries(USERS_COLLECTION);
       enqueueSnackbar('User Deleted Successfully', {variant: EnqueueSnackbarVariant.Success});

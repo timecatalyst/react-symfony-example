@@ -31,7 +31,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Get("v1.0/users")
+     * @Get("v1.0/user")
      * @ParamConverter(name="listParams")
      * @View()
      *
@@ -45,7 +45,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Get("v1.0/users/{userId}")
+     * @Get("v1.0/user/{userId}")
      * @View()
      *
      * @param int $userId
@@ -60,7 +60,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Post("v1.0/users")
+     * @Post("v1.0/user")
      * @ParamConverter("model", converter="fos_rest.request_body")
      * @View(statusCode=201)
      *
@@ -74,7 +74,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Put("v1.0/users/{userId}")
+     * @Put("v1.0/user/{userId}")
      * @ParamConverter("model", converter="fos_rest.request_body")
      * @View()
      *
@@ -91,7 +91,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Delete("v1.0/users/{userId}")
+     * @Delete("v1.0/user/{userId}")
      * @View()
      *
      * @param int $userId

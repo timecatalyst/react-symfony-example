@@ -26,7 +26,7 @@ export const updateUserDetails = (
   dispatch(pending());
 
   try {
-    const response = await put<UserDetails>(`users/${id}`, data);
+    const response = await put<UserDetails>(`user/${id}`, data);
     dispatch(succeeded(response.data));
     if (onSuccess) onSuccess();
   } catch (e) {

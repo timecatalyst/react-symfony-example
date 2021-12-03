@@ -11,7 +11,7 @@ export default (setFormError: SetHookFormErrorFunction<UserFormValues>, onSucces
   const queryClient = useQueryClient();
   const {enqueueSnackbar} = useSnackbar();
 
-  return useMutation((data: UserFormValues) => post<UserDetails>('users', data), {
+  return useMutation((data: UserFormValues) => post<UserDetails>('user', data), {
     onSuccess: () => {
       queryClient.invalidateQueries(USERS_COLLECTION);
       enqueueSnackbar('User Added Successfully', {variant: EnqueueSnackbarVariant.Success});
