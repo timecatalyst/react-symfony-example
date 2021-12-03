@@ -6,7 +6,7 @@ A small web application written in PHP Symfony and React to manage a simple CRUD
 
 ### REST API
 
-Requires PHP >7 and Composer (https://getcomposer.org).
+Requires PHP >8 and Composer (https://getcomposer.org).
 
 - `cd react-symfony-example/rest-api`
 - `composer install`
