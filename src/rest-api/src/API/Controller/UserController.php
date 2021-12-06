@@ -12,6 +12,7 @@ use App\API\Feature\User\RequestHandler\GetUser\GetUserRequest;
 use App\API\Feature\User\RequestHandler\GetUsersList\GetUsersListRequest;
 use App\API\Feature\User\RequestHandler\UpdateUser\UpdateUserRequest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\Annotations\Delete;
 use FOS\RestBundle\Controller\Annotations\Get;
@@ -21,6 +22,9 @@ use League\Tactician\CommandBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @Route("/v1.0/user");
+ */
 class UserController extends AbstractFOSRestController
 {
     private CommandBus $commandBus;
@@ -31,7 +35,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Get("v1.0/user")
+     * @Get()
      * @ParamConverter(name="listParams")
      * @View()
      *
@@ -45,7 +49,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Get("v1.0/user/{userId}")
+     * @Get("/{userId}")
      * @View()
      *
      * @param int $userId
@@ -60,7 +64,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Post("v1.0/user")
+     * @Post()
      * @ParamConverter("model", converter="fos_rest.request_body")
      * @View(statusCode=201)
      *
@@ -74,7 +78,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Put("v1.0/user/{userId}")
+     * @Put("/{userId}")
      * @ParamConverter("model", converter="fos_rest.request_body")
      * @View()
      *
@@ -91,7 +95,7 @@ class UserController extends AbstractFOSRestController
     }
 
     /**
-     * @Delete("v1.0/user/{userId}")
+     * @Delete("/{userId}")
      * @View()
      *
      * @param int $userId
