@@ -2,7 +2,8 @@
 
 namespace App\API\Controller;
 
-use App\API\Feature\Shared\DTO\ListParamsModel;
+use App\API\Feature\Shared\DTO\ListPaginationParamsModel;
+use App\API\Feature\Shared\DTO\ListSortingParamsModel;
 use App\API\Feature\User\DTO\CreateUpdateUserModel;
 use App\API\Feature\User\DTO\UserDetailsModel;
 use App\API\Feature\User\DTO\UsersListResponseModel;
@@ -36,16 +37,21 @@ class UserController extends AbstractFOSRestController
 
     /**
      * @Get()
-     * @ParamConverter(name="listParams")
+     * @ParamConverter(name="sortParams")
+     * @ParamConverter(name="paginationParams")
      * @View()
      *
-     * @param ListParamsModel $listParams
+     * @param ListSortingParamsModel $sortingParams
+     * @param ListPaginationParamsModel $paginationParams
      *
      * @return UsersListResponseModel
      */
-    public function getUsersList(ListParamsModel $listParams): UsersListResponseModel
+    public function getUsersList(
+        ListSortingParamsModel $sortingParams,
+        ListPaginationParamsModel $paginationParams): UsersListResponseModel
     {
-        return $this->commandBus->handle(new GetUsersListRequest($listParams));
+        return $this->commandBus->handle(
+            new GetUsersListRequest($sortingParams, $paginationParams));
     }
 
     /**
