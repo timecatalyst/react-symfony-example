@@ -2,7 +2,7 @@
 
 namespace App\API\ParamConverter;
 
-use App\API\Feature\Shared\DTO\ListPaginationParamsModel;
+use App\API\Domain\Shared\DTO\ListPaginationParamsModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;

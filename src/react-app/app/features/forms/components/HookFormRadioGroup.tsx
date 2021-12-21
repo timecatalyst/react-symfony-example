@@ -13,6 +13,7 @@ type Props = {
   margin?: 'none' | 'dense' | 'normal';
   required?: boolean;
   row?: boolean;
+  transformValue?: (_: string) => string | number | boolean | undefined;
 };
 
 const HookFormRadioGroup = ({
@@ -26,6 +27,7 @@ const HookFormRadioGroup = ({
   margin,
   required,
   row,
+  transformValue,
 }: Props) => {
   const {errors} = useFormContext();
   const error = errors[name];
@@ -50,7 +52,10 @@ const HookFormRadioGroup = ({
             value={value}
             row={row}
             onBlur={onBlur}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => {
+              const v = transformValue ? transformValue(e.target.value) : e.target.value;
+              onChange(v);
+            }}
           >
             {children}
           </RadioGroup>

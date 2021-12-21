@@ -2,7 +2,7 @@
 
 namespace App\API\ParamConverter;
 
-use App\API\Feature\Shared\DTO\ListSortingParamsModel;
+use App\API\Domain\Shared\DTO\ListSortingParamsModel;
 use Doctrine\Common\Collections\Criteria;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;

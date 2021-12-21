@@ -1,10 +1,11 @@
 import React from 'react';
-import {Grid, Paper, makeStyles, Theme} from '@material-ui/core';
+import {Grid, Paper, makeStyles, Theme, CircularProgress} from '@material-ui/core';
 import {FieldLabelValue} from '../../shared/components';
 import {UserDetails} from '../types';
 
 interface Props {
   user: UserDetails;
+  isLoading: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -13,8 +14,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default ({user}: Props) => {
+export default ({user, isLoading}: Props) => {
   const classes = useStyles();
+
+  if (isLoading) return <CircularProgress />;
 
   return (
     <Paper className={classes.cardContainer}>
