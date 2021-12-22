@@ -2,20 +2,12 @@
 /* eslint-disable camelcase */
 /* eslint-disable object-shorthand */
 import {combineReducers} from 'redux';
-
-import users, {UsersState} from './features/users/reducers';
+import {createReducer} from '@reduxjs/toolkit';
 
 export type ApplicationState = {
-  features: {
-    users: UsersState;
-  };
+  features: null;
 };
 
-const createRootReducer = () =>
-  combineReducers({
-    features: combineReducers({
-      users: users,
-    }),
-  });
+const createRootReducer = () => combineReducers({features: createReducer({}, {})});
 
 export default createRootReducer;

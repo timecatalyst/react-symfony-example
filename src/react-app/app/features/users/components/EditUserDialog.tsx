@@ -1,52 +1,39 @@
 import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useQueryClient} from 'react-query';
 import {Dialog, DialogTitle, DialogContent} from '@material-ui/core';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
-import {useSnackbar} from 'notistack';
-import {EnqueueSnackbarVariant} from '../../shared/types';
-import {updateUserDetails} from '../actions';
-import {USERS_COLLECTION} from '../hooks/useUsersList';
+import useUpdateUser from '../hooks/useUpdateUser';
 import {UserFormValues, validationSchema} from '../schemas/userValidationSchema';
-import {userDetailsSelector} from '../selectors/userDetails';
+import {UserDetails} from '../types';
 import AddEditUserForm from './AddEditUserForm';
 
 interface Props {
+  user: UserDetails;
   onClose: () => void;
 }
 
-const useEditUserDialog = (onClose: () => void) => {
-  const dispatch = useDispatch();
-  const userDetails = useSelector(userDetailsSelector);
-  const queryClient = useQueryClient();
-  const {enqueueSnackbar} = useSnackbar();
-
+const useEditUserDialog = (user: UserDetails, onClose: () => void) => {
   const form = useForm<UserFormValues>({
     defaultValues: {
-      name: userDetails.name,
-      email: userDetails.email,
-      gender: userDetails.gender,
-      active: userDetails.active,
+      name: user.name,
+      email: user.email,
+      gender: user.gender,
+      active: user.active,
     },
     resolver: yupResolver(validationSchema),
   });
 
+  const updateUser = useUpdateUser(user.id, form.setError, onClose);
+
   const handleUpdateUser = (values: UserFormValues) => {
-    dispatch(
-      updateUserDetails(userDetails.id, values, form.setError, enqueueSnackbar, () => {
-        enqueueSnackbar('User Added Successfully', {variant: EnqueueSnackbarVariant.Success});
-        queryClient.invalidateQueries(USERS_COLLECTION);
-        onClose();
-      }),
-    );
+    updateUser.mutate(values);
   };
 
   return {form, handleUpdateUser};
 };
 
-export default ({onClose}: Props) => {
-  const {form, handleUpdateUser} = useEditUserDialog(onClose);
+export default ({user, onClose}: Props) => {
+  const {form, handleUpdateUser} = useEditUserDialog(user, onClose);
 
   return (
     <Dialog open onClose={onClose}>

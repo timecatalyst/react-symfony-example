@@ -20,7 +20,12 @@ export default ({form, onSubmit, onCancel}: Props) => (
         <FormControlLabel value={UserGender.Male} control={<Radio />} label="Male" />
         <FormControlLabel value={UserGender.Female} control={<Radio />} label="Female" />
       </HookFormRadioGroup>
-      <HookFormRadioGroup name={nameOf('active')} label="Active" fullWidth>
+      <HookFormRadioGroup
+        name={nameOf('active')}
+        label="Active"
+        fullWidth
+        transformValue={(v: string) => v === 'true'}
+      >
         <FormControlLabel value control={<Radio />} label="Yes" />
         <FormControlLabel value={false} control={<Radio />} label="No" />
       </HookFormRadioGroup>

@@ -12,7 +12,7 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
     _instanceof:
-        App\API\Feature\Shared\Interface\RequestHandlerInterface:
+        App\API\Domain\Shared\Interface\CommandHandlerInterface:
             tags:
                 - { name: tactician.handler, typehints: true }
 
@@ -23,7 +23,7 @@ services:
         exclude:
             - '../src/DependencyInjection/'
             - '../src/DAL/Entity/'
-            - '../src/API/Features/**/DTO/'
+            - '../src/API/Domain/**/DTO/'
             - '../src/Kernel.php'
             - '../src/**/Tests/'
 

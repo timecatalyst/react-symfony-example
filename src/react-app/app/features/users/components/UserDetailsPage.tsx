@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useParams, useHistory} from 'react-router';
-import {CircularProgress, Grid, makeStyles, Theme} from '@material-ui/core';
-import {getUserDetails} from '../actions';
-import {userDetailsSelector, isLoadingSelector} from '../selectors/userDetails';
+import React, {useState} from 'react';
+import {useParams, useHistory} from 'react-router-dom';
+import {Grid, makeStyles, Theme} from '@material-ui/core';
+import useUserDetails from '../hooks/useUserDetails';
 import EditUserDialog from './EditUserDialog';
 import UserDetailsCard from './UserDetailsCard';
+import UserArticlesList from './UserArticlesList';
 import UserDetailsHeader from './UserDetailsHeader';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -15,35 +14,41 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const useUserDetailsPage = () => {
-  const dispatch = useDispatch();
   const history = useHistory();
-  const isLoading = useSelector(isLoadingSelector);
-  const userDetails = useSelector(userDetailsSelector);
   const {userId} = useParams<{userId: string}>();
+  const [editUser, setEditUser] = useState(false);
+  const {user, isLoading} = useUserDetails(userId);
 
-  useEffect(() => {
-    dispatch(getUserDetails(userId));
-  }, [userId, dispatch]);
-
+  const handleEdit = () => setEditUser(true);
+  const handleCancelEdit = () => setEditUser(false);
   const handleBack = () => history.push('/users');
 
-  return {userDetails, isLoading, userId, handleBack};
+  return {userId, user, isLoading, editUser, handleEdit, handleCancelEdit, handleBack};
 };
 
 export default () => {
   const classes = useStyles();
-  const [editUser, setEditUser] = useState(false);
-  const {userDetails, isLoading, handleBack} = useUserDetailsPage();
+
+  const {
+    userId,
+    user,
+    isLoading,
+    editUser,
+    handleEdit,
+    handleCancelEdit,
+    handleBack,
+  } = useUserDetailsPage();
 
   return (
     <Grid className={classes.pageContainer}>
       <UserDetailsHeader
         isLoading={isLoading}
         onNavigateBack={handleBack}
-        onEditUser={() => setEditUser(true)}
+        onEditUser={handleEdit}
       />
-      {isLoading ? <CircularProgress /> : <UserDetailsCard user={userDetails} />}
-      {editUser && <EditUserDialog onClose={() => setEditUser(false)} />}
+      <UserDetailsCard user={user} isLoading={isLoading} />
+      <UserArticlesList userId={userId} />
+      {editUser && <EditUserDialog user={user} onClose={handleCancelEdit} />}
     </Grid>
   );
 };

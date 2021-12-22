@@ -1,64 +1,91 @@
 import React from 'react';
-import {Grid, TableContainer, Table, Paper, CircularProgress} from '@material-ui/core';
-import {SortDirection} from '../../shared/types';
+import {useHistory} from 'react-router-dom';
+import {IconButton} from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import {ListTable} from '../../shared/components/ListTable';
+import useListTableControls from '../../shared/hooks/useListTableControls';
+import {ListTableColumn} from '../../shared/types';
+import useUsersList from '../hooks/useUsersList';
 import {UsersListItem} from '../types';
-import UsersListTableBody from './UsersListTableBody';
-import UsersListTableHeader from './UsersListTableHeader';
-import UsersListTablePager from './UsersListTablePager';
 
 interface Props {
-  isLoading: boolean;
-  users: Array<UsersListItem>;
-  totalItems: number;
-  pageNumber: number;
-  pageSize: number;
-  sortBy: keyof UsersListItem;
-  sortDirection: SortDirection;
-  onRowClick: (_: number) => () => void;
-  onDelete: (_: UsersListItem) => () => void;
-  onSetPageNumber: (_: number) => void;
-  onSetPageSize: (_: number) => void;
-  onSetSortBy: (_: keyof UsersListItem) => void;
-  onSetSortDirection: (_: SortDirection) => void;
+  onDeleteUser: (_: UsersListItem) => () => void;
 }
 
-export default ({
-  isLoading,
-  users,
-  totalItems,
-  pageNumber,
-  pageSize,
-  sortBy,
-  sortDirection,
-  onRowClick,
-  onDelete,
-  onSetPageNumber,
-  onSetPageSize,
-  onSetSortBy,
-  onSetSortDirection,
-}: Props) => (
-  <Grid>
-    <TableContainer component={Paper}>
-      <Table>
-        <UsersListTableHeader
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-          onSetSortBy={onSetSortBy}
-          onSetSortDirection={onSetSortDirection}
-        />
-        {isLoading ? (
-          <CircularProgress />
-        ) : (
-          <UsersListTableBody users={users} onRowClick={onRowClick} onDelete={onDelete} />
-        )}
-      </Table>
-    </TableContainer>
-    <UsersListTablePager
+type UsersListTableColumns = Array<
+  ListTableColumn<UsersListItem & {delete: undefined}, UsersListItem>
+>;
+
+const useUsersListTable = (onDeleteUser: (_: UsersListItem) => () => void) => {
+  const history = useHistory();
+  const tableControls = useListTableControls<UsersListItem>('name');
+
+  const {pageNumber, pageSize, sortBy, sortDirection} = tableControls;
+  const {users, totalItems, isLoading} = useUsersList(pageNumber, pageSize, sortBy, sortDirection);
+
+  const handleRowClick = (user: UsersListItem) => () => {
+    history.push(`users/${user.id}`);
+  };
+
+  const columns: UsersListTableColumns = [
+    {name: 'name', label: 'Name', sortable: true},
+    {name: 'email', label: 'Email', sortable: true},
+    {
+      name: 'delete',
+      label: 'Delete',
+      sortable: false,
+      hasActions: true,
+      renderer: (row: UsersListItem) => (
+        <IconButton onClick={onDeleteUser(row)}>
+          <DeleteIcon />
+        </IconButton>
+      ),
+    },
+  ];
+
+  return {
+    users,
+    totalItems,
+    isLoading,
+    handleRowClick,
+    columns,
+    ...tableControls,
+  };
+};
+
+export default ({onDeleteUser}: Props) => {
+  const {
+    users,
+    totalItems,
+    isLoading,
+    handleRowClick,
+    columns,
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection,
+    setPageNumber,
+    setPageSize,
+    setSortBy,
+    setSortDirection,
+  } = useUsersListTable(onDeleteUser);
+
+  return (
+    <ListTable
+      columns={columns}
+      rows={users}
+      hasPagination
+      isLoading={isLoading}
       totalItems={totalItems}
       pageNumber={pageNumber}
       pageSize={pageSize}
-      onSetPageNumber={onSetPageNumber}
-      onSetPageSize={onSetPageSize}
+      sortBy={sortBy}
+      sortDirection={sortDirection}
+      onSetPageNumber={setPageNumber}
+      onSetPageSize={setPageSize}
+      onSetSortBy={setSortBy}
+      onSetSortDirection={setSortDirection}
+      onRowClick={handleRowClick}
     />
-  </Grid>
-);
+  );
+};

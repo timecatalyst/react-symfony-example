@@ -2,16 +2,19 @@
 
 namespace App\API\Controller;
 
-use App\API\Feature\Shared\DTO\ListPaginationParamsModel;
-use App\API\Feature\Shared\DTO\ListSortingParamsModel;
-use App\API\Feature\User\DTO\CreateUpdateUserModel;
-use App\API\Feature\User\DTO\UserDetailsModel;
-use App\API\Feature\User\DTO\UsersListResponseModel;
-use App\API\Feature\User\RequestHandler\CreateUser\CreateUserRequest;
-use App\API\Feature\User\RequestHandler\DeleteUser\DeleteUserRequest;
-use App\API\Feature\User\RequestHandler\GetUser\GetUserRequest;
-use App\API\Feature\User\RequestHandler\GetUsersList\GetUsersListRequest;
-use App\API\Feature\User\RequestHandler\UpdateUser\UpdateUserRequest;
+use App\API\Domain\Article\Command\GetArticlesList\GetArticlesListCommand;
+use App\API\Domain\Shared\DTO\ListPaginationParamsModel;
+use App\API\Domain\Shared\DTO\ListResponseModel;
+use App\API\Domain\Shared\DTO\ListSortingParamsModel;
+use App\API\Domain\Shared\DTO\SelectListItemModel;
+use App\API\Domain\User\Command\GetUserSelectListItems\GetUserSelectListItemsCommand;
+use App\API\Domain\User\DTO\CreateUpdateUserModel;
+use App\API\Domain\User\DTO\UserDetailsModel;
+use App\API\Domain\User\Command\CreateUser\CreateUserCommand;
+use App\API\Domain\User\Command\DeleteUser\DeleteUserCommand;
+use App\API\Domain\User\Command\GetUser\GetUserCommand;
+use App\API\Domain\User\Command\GetUsersList\GetUsersListCommand;
+use App\API\Domain\User\Command\UpdateUser\UpdateUserCommand;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -44,14 +47,25 @@ class UserController extends AbstractFOSRestController
      * @param ListSortingParamsModel $sortingParams
      * @param ListPaginationParamsModel $paginationParams
      *
-     * @return UsersListResponseModel
+     * @return ListResponseModel
      */
     public function getUsersList(
         ListSortingParamsModel $sortingParams,
-        ListPaginationParamsModel $paginationParams): UsersListResponseModel
+        ListPaginationParamsModel $paginationParams): ListResponseModel
     {
         return $this->commandBus->handle(
-            new GetUsersListRequest($sortingParams, $paginationParams));
+            new GetUsersListCommand($sortingParams, $paginationParams));
+    }
+
+    /**
+     * @Get("/select-list-items")
+     * @View()
+     *
+     * @return SelectListItemModel[]
+     */
+    public function getSelectListItems(): array
+    {
+        return $this->commandBus->handle(new GetUserSelectListItemsCommand());
     }
 
     /**
@@ -64,7 +78,7 @@ class UserController extends AbstractFOSRestController
      */
     public function getUserDetails(int $userId): UserDetailsModel
     {
-        $user = $this->commandBus->handle(new GetUserRequest($userId));
+        $user = $this->commandBus->handle(new GetUserCommand($userId));
         if (!$user) throw new NotFoundHttpException('User not found');
         return $user;
     }
@@ -80,7 +94,7 @@ class UserController extends AbstractFOSRestController
      */
     public function createUser(CreateUpdateUserModel $model): UserDetailsModel
     {
-        return $this->commandBus->handle(new CreateUserRequest($model));
+        return $this->commandBus->handle(new CreateUserCommand($model));
     }
 
     /**
@@ -95,7 +109,7 @@ class UserController extends AbstractFOSRestController
      */
     public function updateUser(int $userId, CreateUpdateUserModel $model): UserDetailsModel
     {
-        $user = $this->commandBus->handle(new UpdateUserRequest($userId, $model));
+        $user = $this->commandBus->handle(new UpdateUserCommand($userId, $model));
         if (!$user) throw new NotFoundHttpException('User not found');
         return $user;
     }
@@ -110,8 +124,29 @@ class UserController extends AbstractFOSRestController
      */
     public function deleteUser(int $userId): int
     {
-        $id = $this->commandBus->handle(new DeleteUserRequest($userId));
+        $id = $this->commandBus->handle(new DeleteUserCommand($userId));
         if (!$id) throw new NotFoundHttpException('User not found');
         return $id;
+    }
+
+    /**
+     * @Get("/{userId}/article")
+     * @ParamConverter(name="sortParams")
+     * @ParamConverter(name="paginationParams")
+     * @View()
+     *
+     * @param int $userId
+     * @param ListSortingParamsModel $sortingParams
+     * @param ListPaginationParamsModel $paginationParams
+     *
+     * @return ListResponseModel
+     */
+    public function getUserArticles(
+        int $userId,
+        ListSortingParamsModel $sortingParams,
+        ListPaginationParamsModel $paginationParams): ListResponseModel
+    {
+        return $this->commandBus->handle(
+            new GetArticlesListCommand($sortingParams, $paginationParams, $userId));
     }
 }
